@@ -20,8 +20,8 @@ class CurrentTime(ft.Text):
 
 
 def main(page: ft.Page):
-    # Настройки
     scale = 1 # Размер текста
+    page.theme_mode = ft.ThemeMode.DARK
     page.title = "Steel app"
     page.padding = 0
     page.margin = 0
@@ -149,6 +149,8 @@ def main(page: ft.Page):
             content.content = main_page
         elif selected_index == 1:
             content.content = input_data_page
+        # elif selected_index == 2:
+        #     content.content = scale_page
         drawer.selected_index = selected_index
         content.update()
 
@@ -206,6 +208,80 @@ def main(page: ft.Page):
         expand=True,
     )
 
+    def minus_scale(e: ft.ControlEvent) -> None:
+        nonlocal scale
+        scale = scale - 0.1
+        scale_field.value = scale
+        page.update()
+        print(scale)
+
+    def plus_scale(e: ft.ControlEvent) -> None:
+        nonlocal scale
+        scale = scale + 0.1
+        scale_field.value = scale
+        page.update()
+        print(scale)
+
+    def reload_page(e: ft.ControlEvent) -> None:
+        print("Reload")
+        layout.scale = ft.transform.Scale(
+            scale=scale,
+            alignment=ft.alignment.center
+        )
+        page.update()
+
+
+
+    increase_scale_button = ft.IconButton(
+        icon=ft.Icons.PLUS_ONE,
+        width=50 * scale,
+        height=50 * scale,
+        style=ft.ButtonStyle(
+            shadow_color=ft.Colors.TRANSPARENT,
+            bgcolor="#0e1621",
+        ),
+        on_click=plus_scale
+    )
+
+    decrease_scale_button = ft.IconButton(
+        icon=ft.Icons.EXPOSURE_MINUS_1,
+        width=50 * scale,
+        height=50 * scale,
+        style=ft.ButtonStyle(
+            shadow_color=ft.Colors.TRANSPARENT,
+            bgcolor="#0e1621",
+        ),
+        on_click=minus_scale
+    )
+    scale_field = ft.TextField(
+        value=str(scale),
+        label="Розмір",
+        label_style=ft.TextStyle(size=16 * scale),
+        text_size=16 * scale
+    )
+    confirm_scale_button = ft.Button(
+        text="Підтвердити",
+        width=200 * scale,
+        height=40 * scale,
+        color=ft.Colors.WHITE,
+        style=ft.ButtonStyle(
+            shadow_color=ft.Colors.TRANSPARENT,
+            bgcolor="#0e1621",
+        ),
+        on_click=reload_page
+    )
+
+    scale_page = ft.Column(
+        controls=[
+            ft.Text("Налаштування", size=20 * scale, weight=ft.FontWeight.BOLD),
+            decrease_scale_button,
+            scale_field,
+            increase_scale_button,
+            confirm_scale_button
+        ],
+        expand=True,
+    )
+
     content = ft.Container(
         expand=True,
         padding=10 * scale,
@@ -230,6 +306,7 @@ def main(page: ft.Page):
         ],
         expand=True,
         spacing=0,
+        scale=scale
     )
 
     page.add(
